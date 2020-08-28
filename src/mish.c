@@ -12,6 +12,7 @@
 /* mish (Mini-shell)
  *  Simplistic Linux/Unix shell as well as
  *  my personal shell.
+ *  Ryan Danver (Visual-mov) 2020.
  */
 
 int main() {
