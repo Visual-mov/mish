@@ -3,7 +3,7 @@ mish (Mini-shell), is a minimalistic Unix shell written in C with the purpose of
 
 *Currently still under development*
 
-If you have any insight or ideas feel free to add it and crate a pull request!
+If you have any insight or ideas, feel free to add it and create a pull request!
 
 ## Install
 Clone repo and compile:
@@ -15,7 +15,7 @@ Clone repo and compile:
 
 ## Planned features
 List of all planned features for mish:
-- [ ] Add escape space escape character for file & folder names with spaces.
+- [ ] Add a space escape character for file & folder names with spaces.
 - [ ] Finish installation script for making default shell.
 - [ ] Allow for the execution of multiple commands with `&&` operator.
 - [ ] Add command redirection operator.

@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/wait.h>
+#include <unistd.h>
 #include <errno.h>
 #include <signal.h>
+#include <sys/wait.h>
+#include <termios.h>
+
 
 #include "mish.h"
 #include "builtins.h"
@@ -15,7 +17,7 @@
  *  Ryan Danver (Visual-mov) 2020.
  */
 
-int main() {
+int main(int argc, char* argv[]) {
     //signal(SIGINT, SIG_IGN);
     char* cwd;
     char* usr = getenv("USER");
@@ -40,32 +42,6 @@ int main() {
         free(cwd);
     }
     return 0;
-}
-
-// TODO: Replace with different line parsing method.
-char* read_line() {
-    char* line = NULL;
-    size_t n;
-    getline(&line, &n, stdin);
-
-    // only if using strtok
-    line[strlen(line)-1] = '\0';
-
-    return line;
-}
-
-// Get current working directory
-char* get_dir() {
-    int cwd_buf = STR_BUF;
-    char* cwd = (char*) malloc(cwd_buf);
-
-    while(getcwd(cwd, cwd_buf) == NULL && errno == ERANGE) {
-        cwd_buf += STR_BUF;
-        cwd = realloc(cwd, cwd_buf * sizeof(char));
-    }
-    check_alloc_ptr((char**) cwd);
-
-    return cwd;
 }
 
 // Split line into args
@@ -150,9 +126,49 @@ int exec_program(char** args) {
     }
 }
 
+// TODO: Replace with different line parsing method.
+char* read_line() {
+    char* line = NULL;
+    size_t n;
+    getline(&line, &n, stdin);
+
+    // only if using strtok
+    line[strlen(line)-1] = '\0';
+
+    return line;
+}
+
+// Get current working directory
+char* get_dir() {
+    int cwd_buf = STR_BUF;
+    char* cwd = (char*) malloc(cwd_buf);
+
+    while(getcwd(cwd, cwd_buf) == NULL && errno == ERANGE) {
+        cwd_buf += STR_BUF;
+        cwd = realloc(cwd, cwd_buf * sizeof(char));
+    }
+    check_alloc_ptr((char**) cwd);
+
+    return cwd;
+}
+
 void check_alloc_ptr(char** p) {
     if(!p) {
         printf("mish: memory allocation error\n");
         mish_exit(p);
+    }
+}
+
+
+// Set the terminal to raw or cooked mode. (without using stty)
+void enable_raw(int enable) {
+    if(enable) {
+        tcgetattr(STDIN_FILENO, &orig_termios);
+        struct termios raw;
+        tcgetattr(STDIN_FILENO, &raw);
+        raw.c_lflag &= ~(ECHO);
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    } else {
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
     }
 }
