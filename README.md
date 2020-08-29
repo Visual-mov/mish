@@ -3,7 +3,7 @@ mish (Mini-shell), is a minimalistic Unix shell written in C with the purpose of
 
 *Currently still under development*
 
-If you have any insight or ideas feel free add it and crate a pull request!
+If you have any insight or ideas feel free to add it and crate a pull request!
 
 ## Install
 Clone repo and compile:
@@ -21,7 +21,7 @@ List of all planned features for mish:
 - [ ] Add command redirection operator.
 - [ ] Keep command history and add 'history' builtin.
 - [ ] Allow for cycling through command history with up & down arrow keys.
-- [ ] Add shortcuts (same as alias).
+- [ ] Add aliasing functionality.
 - [ ] Make a neat logo `:D`
 
 ## Builtins

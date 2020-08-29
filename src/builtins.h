@@ -22,22 +22,20 @@ int in_mish_cmds(char* cmd) {
 void mish_cd(char** args) {
     if(chdir(args[1]) == -1) {
         switch(errno) {
-            default: printf("mish: error changing to directory, \"%s\"\n", args[1]); break;
-            case ENOENT: printf("mish: directory, \"%s\" does not exist\n", args[1]); break;
-            case EACCES: printf("mish: can not access directory, \"%s\"\n", args[1]); break;
-            case EIO: printf("mish: I/O error while changing to directory, \"%s\"\n", args[1]); break;
-            case ENOTDIR: printf("mish: error, \"%s\" is not a directory\n", args[1]); break;
+            default:      printf("cd: error changing to directory, \"%s\"\n", args[1]); break;
+            case ENOENT:  printf("cd: \"%s\" does not exist\n", args[1]); break;
+            case EACCES:  printf("cd: can not access directory, \"%s\"\n", args[1]); break;
+            case ENOTDIR: printf("cd: error, \"%s\" is not a directory\n", args[1]); break;
         }
     }
 }
 
 void mish_exit(char** args) {
     status = 0;
-    free(args);
 }
 
 void mish_help() {
-    printf("\nmish (Mini-shell)\nRyan Danver (Visual-mov) 2020.\n\n"
+    printf(USR_COLOR "\nmish (Mini-shell)\n" RESET "Ryan Danver (Visual-mov) 2020.\n\n"
            "cd [path] - Change directory\n"
            "exit - Exit shell session\n"
            "help - Prints help text.\n\n");

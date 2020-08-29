@@ -16,60 +16,98 @@
  */
 
 int main() {
-    signal(SIGINT, SIG_IGN);
+    //signal(SIGINT, SIG_IGN);
+    char* cwd;
     char* usr = getenv("USER");
-    int cwd_buf = STR_BUF;
-    size_t n;
+    char* line;
 
     while(status) {
-        char* cwd = (char*) malloc(cwd_buf);
-        while(getcwd(cwd, cwd_buf) == NULL && errno == ERANGE) {
-            cwd_buf += STR_BUF;
-            cwd = realloc(cwd, cwd_buf * sizeof(char));
-        }
-        check_alloc_ptr((char**) cwd);
-
+        cwd = get_dir();
         printf(USR_COLOR "%s%s : %s%s%s $ ", usr, RESET, DIR_COLOR, cwd, RESET);
 
-        char* line = NULL;
-        getline(&line, &n, stdin);
-        parse_line(line);
+        line = read_line();
+
+        char** args = parse_line(line);
+        if(args[0] != NULL) {
+            if(in_mish_cmds(args[0]))
+                exec_mish_cmd(args[0], args);
+            else
+                exec_program(args);
+        }
+
+        free(args);
         free(line);
         free(cwd);
     }
     return 0;
 }
 
-// Split line into args tokens and execute.
-void parse_line(char* line) {
+// TODO: Replace with different line parsing method.
+char* read_line() {
+    char* line = NULL;
+    size_t n;
+    getline(&line, &n, stdin);
+
+    // only if using strtok
     line[strlen(line)-1] = '\0';
-    int b_size = TOK_BUF;
-    char** args = (char**) malloc(b_size * sizeof(char*));
+
+    return line;
+}
+
+// Get current working directory
+char* get_dir() {
+    int cwd_buf = STR_BUF;
+    char* cwd = (char*) malloc(cwd_buf);
+
+    while(getcwd(cwd, cwd_buf) == NULL && errno == ERANGE) {
+        cwd_buf += STR_BUF;
+        cwd = realloc(cwd, cwd_buf * sizeof(char));
+    }
+    check_alloc_ptr((char**) cwd);
+
+    return cwd;
+}
+
+// Split line into args
+char** parse_line(char* line) {
+    // this shit don't work lol
+    // Issue copying token to args list
+
+    // int args_index = 0, i = 0;
+    // char** args = (char**) malloc(args_buf * sizeof(char*));
+    // char* token = malloc(strlen(line));
+
+    // while(i < strlen(line)) {
+    //     if (line[i] == ' ' || line[i] == '\n') {
+    //         strncpy(args[args_index], token, 1);
+    //         free(token);
+    //         token = malloc(strlen(line));
+    //         args_index++;
+    //     } else
+    //         strncat(token, &line[i], 1);
+    //     i++;
+    // }
+    // args[args_index+1] = NULL;
+    // free(token);
+
+    int args_buf = ARGS_BUF;
+    char** args = (char**) malloc(args_buf * sizeof(char*));
     char* tok = strtok(line, " ");
     int index = 0;
 
     check_alloc_ptr(args);
     while(tok != NULL) {
         args[index] = tok;
-        if(index == b_size-1) {
-            b_size += TOK_BUF;
-            args = (char**) realloc(args, b_size * sizeof(char*));
+        if(index == args_buf-1) {
+            args_buf += ARGS_BUF;
+            args = (char**) realloc(args, args_buf * sizeof(char*));
             check_alloc_ptr(args);
         }
         tok = strtok(NULL, " ");
         index++;
     }
     args[index] = NULL;
-
-    if(args[0] != NULL) {
-        if(in_mish_cmds(args[0]))
-            exec_mish_cmd(args[0], args);
-        else
-            exec_program(args);
-    }
-
-    if(status)
-        free(args);
+    return args;
 }
 
 // Execute builtin mish commands
@@ -95,7 +133,6 @@ int exec_program(char** args) {
     if(pid == 0) {
         // Don't suppress signal interrupt for child process.
         signal(SIGINT, SIG_DFL);
-
         // If execution was unsuccessful, print the cause and terminate the child process.
         if(execvp(args[0], args) == -1) {
             char* err;
