@@ -15,6 +15,12 @@
 
 #define LISH_ERR(msg) printf("lish: %s", msg);
 
+// Current status of shell
+int status = 1;
+
+struct termios cooked;
+int args_len;
+
 char** parse_line(char* line);
 char* get_dir();
 char* read_line();
@@ -24,10 +30,6 @@ int in_mish_cmds(char* cmd);
 int check_alloc_ptr(void* p);
 void enable_raw(int enable);
 char* sub_string(char* str, int l, int r);
-
-// Current status of shell
-int status = 1;
-
-struct termios cooked;
+void free_args(char** args);
 
 #endif /* mish.h */

@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
                 exec_program(args);
         }
 
-        free(args);
+        free_args(args);
         free(line);
         free(cwd);
     }
@@ -47,56 +47,39 @@ int main(int argc, char* argv[]) {
 // Split line into args
 char** parse_line(char* line) {
     int args_buf = ARGS_BUF;
-    // int args_index = 0, i = 0, last_delim = 0;
-    // char** args = (char**) malloc(args_buf * sizeof(char*));
-
-    // while(i < strlen(line)) {
-    //     if (line[i] == ' ' || line[i] == '\n') {
-    //         char* token = sub_string(line, last_delim, i);
-    //         printf("%s", token);
-    //         args[args_index] = (char*) malloc(strlen(token));
-    //         strncpy(args[args_index], token, 1);
-    //         free(token);
-    //         args_index++;
-    //         last_delim = i;
-    //     }
-    //     i++;
-    // }
-    // args[args_index+1] = NULL;
-
+    int args_index = 0, i = 0, last_delim = 0;
     char** args = (char**) malloc(args_buf * sizeof(char*));
-    char* token = strtok(line, " ");
-    int index = 0;
 
-    if(check_alloc_ptr(args))
-        return NULL;
-
-    while(token != NULL) {
-        if(index == args_buf-1) {
+    while(i < strlen(line)) {
+        if(i == args_buf-1) {
             args_buf += ARGS_BUF;
             args = (char**) realloc(args, args_buf * sizeof(char*));
-            if(check_alloc_ptr(args))
-                return NULL;
+            check_alloc_ptr(args);
         }
-        
-        if(token[strlen(token)-1] == '\\') {
-            char* next = strtok(NULL, " ");
-            token[strlen(token)-1] = ' ';
-            token = strcat(token, next);
+        if (line[i] == ' ' || line[i] == '\n') {
+            char* token = sub_string(line, last_delim, i-1);
+            args[args_index] = token;
+            args_index++;
+            last_delim = i+1;
         }
-        args[index] = token;
-        token = strtok(NULL, " ");
-        index++;
+        i++;
     }
-    args[index] = NULL;
+    args[args_index] = NULL;
+    args_len = args_index;
     return args;
+}
+
+void free_args(char** args) {
+    for(int i = 0; i < args_len; i++) {
+        free(args[i]);
+    }
+    free(args);
 }
 
 char* sub_string(char* str, int l, int r) {
     char* substring = (char*) malloc(r - l + 2);
-    for(int i = l; i <= r; i++) {
+    for(int i = l; i <= r; i++)
         substring[i-l] = str[i];
-    }
     substring[r-l+1] = '\0';
     return substring;
 }
@@ -148,7 +131,7 @@ char* read_line() {
     getline(&line, &n, stdin);
 
     // only if using strtok
-    line[strlen(line)-1] = '\0';
+    //line[strlen(line)-1] = '\0';
 
     return line;
 }
