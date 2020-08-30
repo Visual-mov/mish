@@ -13,18 +13,21 @@
 #define DIR_COLOR "\033[38;5;12m"
 #define RESET "\033[0m"
 
+#define LISH_ERR(msg) printf("lish: %s", msg);
+
 char** parse_line(char* line);
 char* get_dir();
 char* read_line();
 int exec_program(char** args_list);
 int exec_mish_cmd(char* cmd, char** args);
 int in_mish_cmds(char* cmd);
-void check_alloc_ptr(char** p);
+int check_alloc_ptr(void* p);
 void enable_raw(int enable);
+char* sub_string(char* str, int l, int r);
 
 // Current status of shell
 int status = 1;
 
-struct termios orig_termios;
+struct termios cooked;
 
 #endif /* mish.h */

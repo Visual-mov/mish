@@ -4,6 +4,8 @@
 
 #include "mish.h"
 
+#define CD_ERR(dir, msg) printf("cd: \"%s,\" %s", dir, msg);
+
 const char* mish_cmds[] = {
     "exit", "help",
     "cd", "cd..", "~", "/"
@@ -22,10 +24,18 @@ int in_mish_cmds(char* cmd) {
 void mish_cd(char** args) {
     if(chdir(args[1]) == -1) {
         switch(errno) {
-            default:      printf("cd: error changing to directory, \"%s\"\n", args[1]); break;
-            case ENOENT:  printf("cd: \"%s\" does not exist\n", args[1]); break;
-            case EACCES:  printf("cd: can not access directory, \"%s\"\n", args[1]); break;
-            case ENOTDIR: printf("cd: error, \"%s\" is not a directory\n", args[1]); break;
+            default:
+                printf("cd: error changing to directory, \"%s\"\n", args[1]);
+                break;
+            case ENOENT:
+                printf("cd: \"%s\" does not exist\n", args[1]);
+                break;
+            case EACCES:
+                printf("cd: can not access directory, \"%s\"\n", args[1]);
+                break;
+            case ENOTDIR:
+                printf("cd: error, \"%s\" is not a directory\n", args[1]);
+                break;
         }
     }
 }
@@ -36,6 +46,7 @@ void mish_exit(char** args) {
 
 void mish_help() {
     printf(USR_COLOR "\nmish (Mini-shell)\n" RESET "Ryan Danver (Visual-mov) 2020.\n\n"
+           "Builtin cmds:\n"
            "cd [path] - Change directory\n"
            "exit - Exit shell session\n"
            "help - Prints help text.\n\n");

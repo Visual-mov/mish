@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
         line = read_line();
 
         char** args = parse_line(line);
-        if(args[0] != NULL) {
+        if(args != NULL && args[0] != NULL) {
             if(in_mish_cmds(args[0]))
                 exec_mish_cmd(args[0], args);
             else
@@ -46,44 +46,59 @@ int main(int argc, char* argv[]) {
 
 // Split line into args
 char** parse_line(char* line) {
-    // this shit don't work lol
-    // Issue copying token to args list
-
-    // int args_index = 0, i = 0;
+    int args_buf = ARGS_BUF;
+    // int args_index = 0, i = 0, last_delim = 0;
     // char** args = (char**) malloc(args_buf * sizeof(char*));
-    // char* token = malloc(strlen(line));
 
     // while(i < strlen(line)) {
     //     if (line[i] == ' ' || line[i] == '\n') {
+    //         char* token = sub_string(line, last_delim, i);
+    //         printf("%s", token);
+    //         args[args_index] = (char*) malloc(strlen(token));
     //         strncpy(args[args_index], token, 1);
     //         free(token);
-    //         token = malloc(strlen(line));
     //         args_index++;
-    //     } else
-    //         strncat(token, &line[i], 1);
+    //         last_delim = i;
+    //     }
     //     i++;
     // }
     // args[args_index+1] = NULL;
-    // free(token);
 
-    int args_buf = ARGS_BUF;
     char** args = (char**) malloc(args_buf * sizeof(char*));
-    char* tok = strtok(line, " ");
+    char* token = strtok(line, " ");
     int index = 0;
 
-    check_alloc_ptr(args);
-    while(tok != NULL) {
-        args[index] = tok;
+    if(check_alloc_ptr(args))
+        return NULL;
+
+    while(token != NULL) {
         if(index == args_buf-1) {
             args_buf += ARGS_BUF;
             args = (char**) realloc(args, args_buf * sizeof(char*));
-            check_alloc_ptr(args);
+            if(check_alloc_ptr(args))
+                return NULL;
         }
-        tok = strtok(NULL, " ");
+        
+        if(token[strlen(token)-1] == '\\') {
+            char* next = strtok(NULL, " ");
+            token[strlen(token)-1] = ' ';
+            token = strcat(token, next);
+        }
+        args[index] = token;
+        token = strtok(NULL, " ");
         index++;
     }
     args[index] = NULL;
     return args;
+}
+
+char* sub_string(char* str, int l, int r) {
+    char* substring = (char*) malloc(r - l + 2);
+    for(int i = l; i <= r; i++) {
+        substring[i-l] = str[i];
+    }
+    substring[r-l+1] = '\0';
+    return substring;
 }
 
 // Execute builtin mish commands
@@ -122,7 +137,7 @@ int exec_program(char** args) {
         }
     } else if(pid > 0) {
         waitpid(pid, &stat, WUNTRACED);
-        signal(SIGINT, SIG_IGN);
+        //signal(SIGINT, SIG_IGN);
     }
 }
 
@@ -147,28 +162,30 @@ char* get_dir() {
         cwd_buf += STR_BUF;
         cwd = realloc(cwd, cwd_buf * sizeof(char));
     }
-    check_alloc_ptr((char**) cwd);
-
-    return cwd;
+    
+    // vv free in main is invalid if cwd is null vv
+    return (!check_alloc_ptr(cwd)) ? cwd : "?";
 }
 
-void check_alloc_ptr(char** p) {
+int check_alloc_ptr(void* p) {
     if(!p) {
         printf("mish: memory allocation error\n");
         mish_exit(p);
+        return 1;
     }
+    return 0;
 }
 
 
 // Set the terminal to raw or cooked mode. (without using stty)
 void enable_raw(int enable) {
     if(enable) {
-        tcgetattr(STDIN_FILENO, &orig_termios);
+        tcgetattr(STDIN_FILENO, &cooked);
         struct termios raw;
         tcgetattr(STDIN_FILENO, &raw);
         raw.c_lflag &= ~(ECHO);
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
     } else {
-        tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+        tcsetattr(STDIN_FILENO, TCSAFLUSH, &cooked);
     }
 }
