@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
             else
                 exec_program(args);
         }
-        
+
         free_args(args);
         free(line);
         free(cwd);
