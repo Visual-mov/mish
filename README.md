@@ -1,5 +1,5 @@
 # mish
-mish (Mini-shell), is a minimalistic Unix shell written in C for the purpose of learning and being easy to use. It also has a few quality of life features for me personality.
+mish (Mini-shell), is a simple Unix shell written in C for the purpose of learning and being easy to use. I also intend for it to be my personal shell.
 
 *Currently still under development*
 
