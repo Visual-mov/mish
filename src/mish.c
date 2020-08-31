@@ -7,29 +7,32 @@
 #include <sys/wait.h>
 #include <termios.h>
 
-
 #include "mish.h"
 #include "builtins.h"
 
 /* mish (Mini-shell)
- *  Simplistic Linux/Unix shell as well as
- *  my personal shell.
+ *  Simplistic Linux/Unix shell that I'm
+ *  developing to be my personal shell.
  *  Ryan Danver (Visual-mov) 2020.
  */
 
 int main(int argc, char* argv[]) {
     //signal(SIGINT, SIG_IGN);
+    char** args;
     char* cwd;
     char* usr = getenv("USER");
     char* line;
 
+    /* mish shell loop*/
     while(status) {
         cwd = get_dir();
+        check_alloc_ptr(cwd);
+
         printf(USR_COLOR "%s%s : %s%s%s $ ", usr, RESET, DIR_COLOR, cwd, RESET);
 
         line = read_line();
+        args = parse_line(line);
 
-        char** args = parse_line(line);
         if(args != NULL && args[0] != NULL) {
             if(in_mish_cmds(args[0]))
                 exec_mish_cmd(args[0], args);
@@ -44,18 +47,23 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-// Split line into args
+/* Splits line into args */
 char** parse_line(char* line) {
     int args_buf = ARGS_BUF;
     int args_index = 0, i = 0, last_delim = 0;
+
     char** args = (char**) malloc(args_buf * sizeof(char*));
+    check_alloc_ptr(args);
 
     while(i < strlen(line)) {
         if(i == args_buf-1) {
             args_buf += ARGS_BUF;
-            args = (char**) realloc(args, args_buf * sizeof(char*));
-            check_alloc_ptr(args);
+            if(!(args = (char**) realloc(args, args_buf * sizeof(char*)))) {
+                MISH_ERR("memory allocation error");
+                status = 0;
+            }
         }
+        
         if (line[i] == ' ' || line[i] == '\n') {
             char* token = sub_string(line, last_delim, i-1);
             args[args_index] = token;
@@ -69,6 +77,7 @@ char** parse_line(char* line) {
     return args;
 }
 
+/* Frees all alloced space for arguments. */
 void free_args(char** args) {
     for(int i = 0; i < args_len; i++) {
         free(args[i]);
@@ -84,24 +93,24 @@ char* sub_string(char* str, int l, int r) {
     return substring;
 }
 
-// Execute builtin mish commands
-int exec_mish_cmd(char* cmd, char** args) {
+/* Executes builtin mish commands */
+void exec_mish_cmd(char* cmd, char** args) {
     if(strcmp(cmd, "help") == 0)
         mish_help();
     else if(strcmp(cmd, "exit") == 0)
-        mish_exit(args);
+        status = 0;
     else if(strcmp(cmd, "cd") == 0)
         mish_cd(args);
     else if(strcmp(cmd, "~") == 0)
         mish_home();
     else if(strcmp(cmd, "/") == 0)
         mish_root();
-    else if(strcmp(cmd, "cd..") == 0)
+    else if(strcmp(cmd, "..") == 0)
         mish_cd_up();
 }
 
-// Create child process and execute program located in PATH
-int exec_program(char** args) {
+/* Create child process and execute program with arguments. */
+void exec_program(char** args) {
     pid_t pid = fork();
     int stat;
     if(pid == 0) {
@@ -116,7 +125,7 @@ int exec_program(char** args) {
                 case EACCES: err = "permission denied"; break;
             }
             printf("%s: %s\n", args[0], err);
-            mish_exit(args);
+            status = 0;
         }
     } else if(pid > 0) {
         waitpid(pid, &stat, WUNTRACED);
@@ -124,51 +133,43 @@ int exec_program(char** args) {
     }
 }
 
-// TODO: Replace with different line parsing method.
+/* Reads line from stdin, reallocing as needed */
 char* read_line() {
     char* line = NULL;
     size_t n;
     getline(&line, &n, stdin);
-
-    // only if using strtok
-    //line[strlen(line)-1] = '\0';
-
     return line;
 }
 
-// Get current working directory
+/* Gets working directory for shell */
 char* get_dir() {
     int cwd_buf = STR_BUF;
     char* cwd = (char*) malloc(cwd_buf);
 
     while(getcwd(cwd, cwd_buf) == NULL && errno == ERANGE) {
         cwd_buf += STR_BUF;
-        cwd = realloc(cwd, cwd_buf * sizeof(char));
+        cwd = realloc(cwd, cwd_buf);
     }
     
-    // vv free in main is invalid if cwd is null vv
-    return (!check_alloc_ptr(cwd)) ? cwd : "?";
+    return cwd;
 }
 
-int check_alloc_ptr(void* p) {
+/* Checks if memory hadn't been successfully allocated, and prints error */
+void check_alloc_ptr(void* p) {
     if(!p) {
-        printf("mish: memory allocation error\n");
-        mish_exit(p);
-        return 1;
-    }
-    return 0;
-}
-
-
-// Set the terminal to raw or cooked mode. (without using stty)
-void enable_raw(int enable) {
-    if(enable) {
-        tcgetattr(STDIN_FILENO, &cooked);
-        struct termios raw;
-        tcgetattr(STDIN_FILENO, &raw);
-        raw.c_lflag &= ~(ECHO);
-        tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
-    } else {
-        tcsetattr(STDIN_FILENO, TCSAFLUSH, &cooked);
+        MISH_ERR("memory allocation error");
+        status = 0;
     }
 }
+
+// void enable_raw(int enable) {
+//     if(enable) {
+//         tcgetattr(STDIN_FILENO, &cooked);
+//         struct termios raw;
+//         tcgetattr(STDIN_FILENO, &raw);
+//         raw.c_lflag &= ~(ECHO);
+//         tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+//     } else {
+//         tcsetattr(STDIN_FILENO, TCSAFLUSH, &cooked);
+//     }
+// }

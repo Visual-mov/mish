@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
-#include "mish.h"
+#ifndef BUILTINS_H
+#define BUILTINS_H
 
-#define CD_ERR(dir, msg) printf("cd: \"%s,\" %s", dir, msg);
+#define CD_ERR(dir, msg) printf("cd: \"%s\" %s\n", dir, msg);
 
 const char* mish_cmds[] = {
     "exit", "help",
-    "cd", "cd..", "~", "/"
+    "cd", "..", "~", "/"
 };
 const int cmds_len = sizeof(mish_cmds) / sizeof(char*);
 
@@ -25,23 +28,19 @@ void mish_cd(char** args) {
     if(chdir(args[1]) == -1) {
         switch(errno) {
             default:
-                printf("cd: error changing to directory, \"%s\"\n", args[1]);
+                CD_ERR(args[1], "error changing to directory");
                 break;
             case ENOENT:
-                printf("cd: \"%s\" does not exist\n", args[1]);
+                CD_ERR(args[1], "directory does not exist");
                 break;
             case EACCES:
-                printf("cd: can not access directory, \"%s\"\n", args[1]);
+                CD_ERR(args[1], "can not access directory");
                 break;
             case ENOTDIR:
-                printf("cd: error, \"%s\" is not a directory\n", args[1]);
+                CD_ERR(args[1], "is not a directory")
                 break;
         }
     }
-}
-
-void mish_exit(char** args) {
-    status = 0;
 }
 
 void mish_help() {
@@ -63,8 +62,9 @@ void mish_root() {
     mish_cd(args);
 }
 
-// temp
 void mish_cd_up() {
     char* args[] = {"", ".."};
     mish_cd(args);
 }
+
+#endif /* builtins.h */
