@@ -19,27 +19,37 @@
 int main(int argc, char* argv[]) {
     //signal(SIGINT, SIG_IGN);
     char** args;
-    char* cwd;
-    char* usr = getenv("USER");
-    char* line;
+    char* cwd, *line, *usr;
+    
+    if(!(usr = getenv("USER"))) {
+        MISH_ERR("could not find user");
+        status = 0;
+    }
 
     /* mish shell loop*/
     while(status) {
-        cwd = get_dir();
-        check_alloc_ptr(cwd);
+        if(!(cwd = get_dir())) {
+            MISH_ERR("memory allocation error");
+            exit(EXIT_FAILURE);
+        }
 
         printf(USR_COLOR "%s%s : %s%s%s $ ", usr, RESET, DIR_COLOR, cwd, RESET);
 
         line = read_line();
-        args = parse_line(line);
+        if(!(args = parse_line(line))) {
+            free(line);
+            free(cwd);
+            MISH_ERR("memory allocation error");
+            exit(EXIT_FAILURE);
+        }
 
-        if(args != NULL && args[0] != NULL) {
+        if(args[0] != NULL) {
             if(in_mish_cmds(args[0]))
                 exec_mish_cmd(args[0], args);
             else
                 exec_program(args);
         }
-
+        
         free_args(args);
         free(line);
         free(cwd);
@@ -52,16 +62,15 @@ char** parse_line(char* line) {
     int args_buf = ARGS_BUF;
     int args_index = 0, i = 0, last_delim = 0;
 
-    char** args = (char**) malloc(args_buf * sizeof(char*));
-    check_alloc_ptr(args);
+    char** args;
+    if(!(args = (char**) malloc(args_buf * sizeof(char*))))
+        return NULL;
 
     while(i < strlen(line)) {
         if(i == args_buf-1) {
             args_buf += ARGS_BUF;
-            if(!(args = (char**) realloc(args, args_buf * sizeof(char*)))) {
-                MISH_ERR("memory allocation error");
-                status = 0;
-            }
+            if(!(args = (char**) realloc(args, args_buf * sizeof(char*))))
+                return NULL;
         }
         
         if (line[i] == ' ' || line[i] == '\n') {
@@ -144,7 +153,10 @@ char* read_line() {
 /* Gets working directory for shell */
 char* get_dir() {
     int cwd_buf = STR_BUF;
-    char* cwd = (char*) malloc(cwd_buf);
+
+    char* cwd;
+    if(!(cwd = (char*) malloc(cwd_buf)))
+        return NULL;
 
     while(getcwd(cwd, cwd_buf) == NULL && errno == ERANGE) {
         cwd_buf += STR_BUF;
@@ -152,14 +164,6 @@ char* get_dir() {
     }
     
     return cwd;
-}
-
-/* Checks if memory hadn't been successfully allocated, and prints error */
-void check_alloc_ptr(void* p) {
-    if(!p) {
-        MISH_ERR("memory allocation error");
-        status = 0;
-    }
 }
 
 // void enable_raw(int enable) {

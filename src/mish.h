@@ -24,7 +24,6 @@ char* read_line();
 void exec_program(char** args_list);
 void exec_mish_cmd(char* cmd, char** args);
 int in_mish_cmds(char* cmd);
-void check_alloc_ptr(void* p);
 void enable_raw(int enable);
 char* sub_string(char* str, int l, int r);
 void free_args(char** args);
