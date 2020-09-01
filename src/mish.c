@@ -49,7 +49,6 @@ int main(int argc, char* argv[]) {
             else
                 exec_program(args);
         }
-
         free_args(args);
         free(line);
         free(cwd);
@@ -129,9 +128,15 @@ void exec_program(char** args) {
         if(execvp(args[0], args) == -1) {
             char* err;
             switch(errno) {
-                default: err = "execution error"; break;
-                case ENOENT: err = "command not found"; break;
-                case EACCES: err = "permission denied"; break;
+                default:
+                    err = "execution error";
+                    break;
+                case ENOENT:
+                    err = "command not found";
+                    break;
+                case EACCES:
+                    err = "permission denied";
+                    break;
             }
             printf("%s: %s\n", args[0], err);
             status = 0;

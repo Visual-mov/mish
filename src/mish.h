@@ -1,17 +1,17 @@
 #include <termios.h>
+#include "color.h"
 
 #ifndef MISH_H
 #define MISH_H
 
 // String buffer
 #define STR_BUF 10000
+
 // Buffer for args list parsing
 #define ARGS_BUF 100
 
-#define USR_COLOR "\033[38;5;10m"
-#define DIR_COLOR "\033[38;5;12m"
-#define RESET "\033[0m"
-
+#define USR_COLOR GREEN
+#define DIR_COLOR BLUE
 #define MISH_ERR(msg) printf("mish: %s\n", msg);
 
 int status = 1;

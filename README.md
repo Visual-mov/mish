@@ -30,6 +30,7 @@ List of all planned features for mish:
 - [ ] Allow for the execution of multiple commands with `&&` operator.
 - [ ] Keep command history and add 'history' builtin.
 - [ ] Allow for cycling through command history with up & down arrow keys.
+- [ ] Add basic scripting functionality.
 - [ ] Make a neat logo `:D`
 
 ## Builtins
