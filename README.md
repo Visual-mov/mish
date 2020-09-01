@@ -1,5 +1,5 @@
 # mish
-mish (Mini-shell), is a simple Unix shell written in C for the purpose of learning and being easy to use. I also intend for it to be my personal shell.
+mish (Mini-shell), is a simple Unix shell written in C for the purpose of learning and being easy to use.
 
 *Currently still under development*
 
@@ -26,7 +26,7 @@ Compile mish and add to default shells
 List of all planned features for mish:
 - [ ] Add a space escape character for file & folder names with spaces.
 - [x] Finish installation script for making default shell.
-- [ ] make code more modular
+- [x] make code more modular
 - [ ] Allow for the execution of multiple commands with `&&` operator.
 - [ ] Keep command history and add 'history' builtin.
 - [ ] Allow for cycling through command history with up & down arrow keys.
