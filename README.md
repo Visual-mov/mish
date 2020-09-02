@@ -22,14 +22,13 @@ Compile mish and add to default shells
 ~$ make install
 ```
 
-## Planned features
-List of all planned features for mish:
+## TODO list
 - [ ] Add a space escape character for file & folder names with spaces.
+- [ ] Create shell language grammar
+- [ ] Implement grammar
 - [x] Finish installation script for making default shell.
-- [x] make code more modular
 - [ ] Allow for the execution of multiple commands with `&&` operator.
 - [ ] Keep command history and add 'history' builtin.
-- [ ] Allow for cycling through command history with up & down arrow keys.
 - [ ] Add basic scripting functionality.
 - [ ] Make a neat logo `:D`
 

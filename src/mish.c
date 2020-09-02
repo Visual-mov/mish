@@ -11,8 +11,7 @@
 #include "builtins.h"
 
 /* mish (Mini-shell)
- *  Simplistic Linux/Unix shell that I'm
- *  developing to be my personal shell.
+ *  Simplistic Linux/Unix shell.
  *  Ryan Danver (Visual-mov) 2020.
  */
 
@@ -36,11 +35,11 @@ int main(int argc, char* argv[]) {
         printf(USR_COLOR "%s%s : %s%s%s $ ", usr, RESET, DIR_COLOR, cwd, RESET);
 
         line = read_line();
-        if(!(args = parse_line(line))) {
+        if(!(args = parse_cmd(line))) {
+            MISH_ERR("memory allocation error");
             free(line);
             free(cwd);
-            MISH_ERR("memory allocation error");
-            exit(EXIT_FAILURE);
+            //goto ERR_CLEANUP;
         }
 
         if(args[0] != NULL) {
@@ -53,11 +52,19 @@ int main(int argc, char* argv[]) {
         free(line);
         free(cwd);
     }
+
     return 0;
 }
 
-/* Splits line into args */
-char** parse_line(char* line) {
+
+/* Lexical analysis for mish
+ *  Splits source string into tokens
+ *  for parsing.
+ */
+
+
+/* Splits command into arguments */
+char** parse_cmd(char* line) {
     int args_buf = ARGS_BUF;
     int args_index = 0, i = 0, last_delim = 0;
 
@@ -155,7 +162,7 @@ char* read_line() {
     return line;
 }
 
-/* Gets working directory for shell */
+/* Gets working directory of shell */
 char* get_dir() {
     int cwd_buf = STR_BUF;
 

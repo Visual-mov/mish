@@ -1,0 +1,10 @@
+
+compound_cmd := cmd '&&' cmd
+              | cmd '>' string_literal
+
+cmd := (arg)*
+     | compound_cmd
+
+arg := ARGUMENT
+
+string_literal := STRING

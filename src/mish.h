@@ -18,7 +18,7 @@ int status = 1;
 struct termios cooked;
 int args_len;
 
-char** parse_line(char* line);
+char** parse_cmd(char* line);
 char* get_dir();
 char* read_line();
 void exec_program(char** args_list);
