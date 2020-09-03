@@ -12,7 +12,7 @@
 
 #define USR_COLOR GREEN
 #define DIR_COLOR BLUE
-#define MISH_ERR(msg) printf("mish: %s\n", msg);
+#define MISH_ERR(err) printf("mish: %s\n", err);
 
 int status = 1;
 struct termios cooked;

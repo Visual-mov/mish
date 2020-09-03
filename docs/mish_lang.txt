@@ -1,10 +1,18 @@
 
-compound_cmd := cmd '&&' cmd
-              | cmd '>' string_literal
+line := compound_cmd
+
+compound_cmd := cmd ('&&' cmd)?
+              | cmd ('>' string_literal)?
 
 cmd := (arg)*
+     | builtin
      | compound_cmd
 
+builtin := 'cd' arg
+         | 'help'
+         | 'quit'
+
 arg := ARGUMENT
+     | string_literal
 
 string_literal := STRING

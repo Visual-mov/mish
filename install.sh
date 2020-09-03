@@ -1,5 +1,6 @@
 #!/bin/bash
-# Set mish as a defualt shell
+
+# Script to set mish as a default shell
 
 INSTALL_DIR="/usr/bin"
 
@@ -11,6 +12,9 @@ if [ -f "mish" ]; then
     if ! grep -Fxq "$INSTALL_DIR/mish" /etc/shells; then
         echo "$INSTALL_DIR/mish" >> /etc/shells
     fi
+
+    # add chsh -s
+
 else
-    echo "couldn't find executable"
+    echo "Couldn't find executable, error compiling?"
 fi
