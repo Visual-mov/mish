@@ -1,7 +1,7 @@
 # mish
-mish (Mini-shell), is a simple Unix shell written in C for the purpose of learning and being easy to use.
+mish (Mini-shell), is a Unix shell written in C that is easy to use, while being a robust and capable shell.
 
-*Currently still under development*
+*mish is an on-going project, and is still in development.*
 
 If you have any insight or ideas, feel free to add it and create a pull request!
 
@@ -17,7 +17,7 @@ Compile mish
 ~$ make
 ```
 
-Compile mish and add to default shells
+Compile mish and add to default shells (pull repo and re-make to update the shell )
 ```
 ~$ make install
 ```
