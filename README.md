@@ -17,14 +17,14 @@ Compile mish
 ~$ make
 ```
 
-Compile mish and add to default shells (pull repo and re-make to update the shell )
+Compile mish and add to default shells (pull repo and re-make to update the shell)
 ```
 ~$ make install
 ```
 
 ## TODO list
 - [ ] Add a space escape character for file & folder names with spaces.
-- [ ] Create shell language grammar
+- [x] Create shell language grammar
 - [ ] Implement grammar
 - [x] Finish installation script for making default shell.
 - [ ] Allow for the execution of multiple commands with `&&` operator.
