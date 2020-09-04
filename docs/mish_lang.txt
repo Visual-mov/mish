@@ -1,3 +1,4 @@
+Grammar for mish shell language.
 
 line := compound_cmd
 

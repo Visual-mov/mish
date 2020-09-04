@@ -56,13 +56,6 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-
-/* Lexical analysis for mish
- *  Splits source string into tokens
- *  for parsing.
- */
-
-
 /* Splits command into arguments */
 char** parse_cmd(char* line) {
     int args_buf = ARGS_BUF;
@@ -91,6 +84,13 @@ char** parse_cmd(char* line) {
     args_len = args_index;
     return args;
 }
+char* sub_string(char* str, int l, int r) {
+    char* substring = (char*) malloc(r - l + 2);
+    for(int i = l; i <= r; i++)
+        substring[i-l] = str[i];
+    substring[r-l+1] = '\0';
+    return substring;
+}
 
 /* Frees all alloced space for arguments. */
 void free_args(char** args) {
@@ -98,14 +98,6 @@ void free_args(char** args) {
         free(args[i]);
     }
     free(args);
-}
-
-char* sub_string(char* str, int l, int r) {
-    char* substring = (char*) malloc(r - l + 2);
-    for(int i = l; i <= r; i++)
-        substring[i-l] = str[i];
-    substring[r-l+1] = '\0';
-    return substring;
 }
 
 /* Executes builtin mish commands */
