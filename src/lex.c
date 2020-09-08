@@ -6,25 +6,70 @@
 
 /* Mish lexer / tokenizer */
 
+// hey this is my first time writing a hand-rolled
+// lexer in c and my god I want to die
+
 int STR_FLAG = 0;
+char* start, *cur;
 
+/* Scans a line and returns token list. */
 t_list lex_line(char* src) {
-    char* left, *right;
-    t_list tokens = {(token*) malloc(TOK_BUF * sizeof(token)), 0};
+    start = src;
+    cur = src;
 
-    for(int i = 0; i < strlen(src); i++) {
-        if(src[i] == '&' && peek(src, i) == '&') {
-            add_token(&tokens, D_AMPER, &src[i], 2);
-            i++;
-        } else if(src[i] == '\n')
-            add_token(&tokens, EOL, &src[i], 1);
+    int buf = TOK_BUF;
+    t_list tokens = {(token*) malloc(buf * sizeof(token)), 0};
 
-        // tok buffer
+
+    while(!at_end()) {
+        if(cur[0] == '&' && peek() == '&') {
+            add_token(&tokens, D_AMPER, cur, 2);
+            advance();
+            start = cur;
+        } else if(cur[0] == '\"') {
+            STR_FLAG = !STR_FLAG;
+        } else {
+            scan_arg(&tokens, src);
+        }
+
+        if(peek() == /* newline */EOL_CHAR) {
+            add_token(&tokens, EOL, &cur[1], 1);
+        }
+
+        // add tok buffer realloc
+
+        advance();
     }
 
     return tokens;
 }
 
+void scan_arg(t_list* list, char* src) {
+    while(cur[0] != MISH_DELIM && peek() != EOL_CHAR)
+        advance();
+
+    add_token(list, ARG, start, strlen(start) - strlen(cur));
+
+    // temp
+    if(cur[0] == MISH_DELIM)
+        advance();
+
+    start = cur;
+}
+
+void advance() {
+    cur++;
+}
+
+int at_end() {
+    return cur[0] == EOL_CHAR;
+}
+
+int scan_str() {
+
+}
+
+/* Constructs and adds a token to the given token list. */
 void add_token(t_list* list, t_type type, char* start, int tok_len) {
     static int tok_index;
     token tok = {type, start, tok_len};
@@ -32,11 +77,17 @@ void add_token(t_list* list, t_type type, char* start, int tok_len) {
     list->len = ++tok_index;
 }
 
-char peek(char* src, int index) {
-    return (index > strlen(src)) ? NULL : src[index];
+/* Return the next character to be passed by the cur pointer. */
+char peek() {
+    return (strlen(cur) <= 1) ? EOL_CHAR : cur[1];
 }
 
-// Get string from token start to tok_len.
+/* Get string from token start to tok_len. */
 char* get_literal() {
+
+}
+
+/* Removes character at cur and shifts src string. */
+void remove_char(char* src) {
 
 }
