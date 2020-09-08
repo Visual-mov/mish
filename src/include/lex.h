@@ -4,12 +4,11 @@
 #define LEX_ERR(err) printf("mish: error while tokenizing, %s\n", err);
 #define MISH_DELIM ' '
 #define TOK_BUF 64
-
 // temp
 #define EOL_CHAR '|'
 
 typedef enum {
-    EOL, ARG, STR, D_AMPER
+    EOL, ARG, STR, ESC, D_AMPER
 } t_type;
 
 // Stores start of token in src string, and the length of the token with its type.

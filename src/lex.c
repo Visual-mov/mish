@@ -6,9 +6,6 @@
 
 /* Mish lexer / tokenizer */
 
-// hey this is my first time writing a hand-rolled
-// lexer in c and my god I want to die
-
 int STR_FLAG = 0;
 char* start, *cur;
 
@@ -28,6 +25,8 @@ t_list lex_line(char* src) {
             start = cur;
         } else if(cur[0] == '\"') {
             STR_FLAG = !STR_FLAG;
+        } else if(cur[0] == '\\') {
+            add_token(&tokens, ESC, cur, 1);
         } else {
             scan_arg(&tokens, src);
         }
@@ -57,15 +56,7 @@ void scan_arg(t_list* list, char* src) {
     start = cur;
 }
 
-void advance() {
-    cur++;
-}
-
-int at_end() {
-    return cur[0] == EOL_CHAR;
-}
-
-int scan_str() {
+int is_alpha(char c) {
 
 }
 
@@ -80,6 +71,14 @@ void add_token(t_list* list, t_type type, char* start, int tok_len) {
 /* Return the next character to be passed by the cur pointer. */
 char peek() {
     return (strlen(cur) <= 1) ? EOL_CHAR : cur[1];
+}
+
+void advance() {
+    cur++;
+}
+
+int at_end() {
+    return cur[0] == EOL_CHAR;
 }
 
 /* Get string from token start to tok_len. */

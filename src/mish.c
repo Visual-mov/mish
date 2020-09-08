@@ -7,8 +7,8 @@
 #include <sys/wait.h>
 #include <termios.h>
 
-#include "mish.h"
-#include "builtins.h"
+#include "include/mish.h"
+#include "include/builtins.h"
 
 /* mish (Mini-shell)
  *  Simplistic Linux/Unix shell.

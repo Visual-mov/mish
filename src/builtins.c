@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "builtins.h"
-#include "color.h"
+#include "include/builtins.h"
+#include "include/color.h"
 
 const char* mish_cmds[] = {
     "exit", "help",
