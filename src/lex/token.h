@@ -1,4 +1,3 @@
-
 typedef enum {
     TOK_ARG, TOK_STR, TOK_DAMPER, TOK_ESC, TOK_EOF
 } t_type;
@@ -9,4 +8,6 @@ typedef struct {
 } token_t;
 
 void print_tok(token_t* tok);
+char* get_enum_str(t_type type);
+
 token_t create_tok(char* val, t_type type);

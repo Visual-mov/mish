@@ -444,9 +444,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "src/lex/scanner.lex"
-#line 2 "src/lex/scanner.lex"
-    #include "include/token.h"
+#line 1 "src/lex/scanner.l"
+#line 2 "src/lex/scanner.l"
+    #include "token.h"
 #line 451 "./src/lex/lex.yy.c"
 #line 452 "./src/lex/lex.yy.c"
 
@@ -665,7 +665,7 @@ YY_DECL
 		}
 
 	{
-#line 5 "src/lex/scanner.lex"
+#line 5 "src/lex/scanner.l"
 
 #line 671 "./src/lex/lex.yy.c"
 
@@ -726,7 +726,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 6 "src/lex/scanner.lex"
+#line 6 "src/lex/scanner.l"
 {
     token_t new = create_tok(yytext, TOK_ARG);
     print_tok(&new);
@@ -734,7 +734,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 11 "src/lex/scanner.lex"
+#line 11 "src/lex/scanner.l"
 {
     token_t new = create_tok("", TOK_DAMPER);
     print_tok(&new);
@@ -742,7 +742,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "src/lex/scanner.lex"
+#line 16 "src/lex/scanner.l"
 {
     token_t new = create_tok("", TOK_ESC);
     print_tok(&new);
@@ -750,7 +750,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 21 "src/lex/scanner.lex"
+#line 21 "src/lex/scanner.l"
 {
     token_t new = create_tok(yytext, TOK_STR);
     print_tok(&new);
@@ -758,7 +758,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 25 "src/lex/scanner.lex"
+#line 25 "src/lex/scanner.l"
 ECHO;
 	YY_BREAK
 #line 765 "./src/lex/lex.yy.c"
@@ -1766,5 +1766,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 25 "src/lex/scanner.lex"
+#line 25 "src/lex/scanner.l"
 
