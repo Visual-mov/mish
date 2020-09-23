@@ -1,13 +1,18 @@
 CC = gcc
 FLAGS = -g -Wall
 
-all: mish.o builtins.o
+all: 
+	lex
+	mish.o builtins.o
 	${CC} ${FLAGS} mish.o builtins.o -o mish
 
 install: all
 	chmod a+x install.sh
 	sudo ./install.sh
 
+lex:
+	flex --outfile ./src/lex/lex.yy.c src/lex/scanner.lex
+	
 %.o: src/%.c
 	${CC} ${FLAGS} -c $^
 
